@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -9,23 +9,63 @@ import { Badge } from '@/components/ui/badge';
 import { Search, MapPin, Calendar, Globe } from 'lucide-react';
 import Link from 'next/link';
 import NextImage from 'next/image';
-import { universitiesData } from '@/lib/universities-data';
+import { universitiesData, type University } from '@/lib/universities-data';
+import { fetchPublicUniversities } from '@/action/university/server-action';
+import type { ApiUniversity } from '@/action/university/types';
 
-const countries = ['All', 'South Korea', 'Italy', 'Malta', 'Austria', 'Hungary'];
+/** Convert an API university to the local University shape */
+function toLocalUniversity(u: ApiUniversity): University {
+    return {
+        id: u._id as any, // string _id for API universities
+        name: u.name,
+        country: u.country,
+        city: u.location,
+        image: u.image || 'https://images.unsplash.com/photo-1541339907198-e08756ebafe3?auto=format&fit=crop&q=80',
+        description: u.description,
+        founded: u.established,
+    };
+}
+
+const HARDCODED_COUNTRIES = ['South Korea', 'Italy', 'Malta', 'Austria', 'Hungary'];
 const UNIVERSITIES_PER_PAGE = 12;
 
 export default function UniversitiesPage() {
+    const [allUniversities, setAllUniversities] = useState<University[]>(universitiesData);
     const [selectedCountry, setSelectedCountry] = useState('All');
     const [searchQuery, setSearchQuery] = useState('');
     const [visibleCount, setVisibleCount] = useState(UNIVERSITIES_PER_PAGE);
 
+    // Fetch API universities and merge with hardcoded
+    useEffect(() => {
+        fetchPublicUniversities().then((apiUnis) => {
+            if (apiUnis.length > 0) {
+                const converted = apiUnis.map(toLocalUniversity);
+                // Merge: hardcoded first, then API (avoiding name duplicates)
+                const hardcodedNames = new Set(universitiesData.map(u => u.name.toLowerCase()));
+                const newFromApi = converted.filter(u => !hardcodedNames.has(u.name.toLowerCase()));
+                setAllUniversities([...universitiesData, ...newFromApi]);
+            }
+        });
+    }, []);
+
+    // Build dynamic country list
+    const countries = useMemo(() => {
+        const countrySet = new Set(allUniversities.map(u => u.country));
+        // Ensure hardcoded countries appear first, then any new from API
+        const ordered = HARDCODED_COUNTRIES.filter(c => countrySet.has(c));
+        countrySet.forEach(c => {
+            if (!ordered.includes(c)) ordered.push(c);
+        });
+        return ['All', ...ordered];
+    }, [allUniversities]);
+
     const filteredUniversities = useMemo(() => {
-        return universitiesData.filter(uni => {
+        return allUniversities.filter(uni => {
             const matchesCountry = selectedCountry === 'All' || uni.country === selectedCountry;
             const matchesSearch = uni.name.toLowerCase().includes(searchQuery.toLowerCase());
             return matchesCountry && matchesSearch;
         });
-    }, [selectedCountry, searchQuery]);
+    }, [selectedCountry, searchQuery, allUniversities]);
 
     const displayedUniversities = filteredUniversities.slice(0, visibleCount);
 

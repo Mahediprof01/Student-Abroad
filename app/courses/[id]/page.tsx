@@ -1,6 +1,6 @@
 'use client';
 
-import { use } from 'react';
+import { use, useState, useEffect } from 'react';
 import { notFound } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,15 +13,57 @@ import {
     Calendar,
     Users,
     Award,
-    ArrowLeft
+    ArrowLeft,
+    Loader2
 } from 'lucide-react';
 import Link from 'next/link';
-import { universitiesData } from '@/lib/universities-data';
+import { universitiesData, type University } from '@/lib/universities-data';
+import { fetchUniversityById } from '@/action/university/server-action';
 import NextImage from 'next/image';
 
 export default function UniversityPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
-    const university = universitiesData.find(u => u.id === parseInt(id));
+    const [university, setUniversity] = useState<University | null>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        async function load() {
+            // First try hardcoded (numeric id)
+            const numericId = parseInt(id);
+            if (!isNaN(numericId)) {
+                const found = universitiesData.find(u => u.id === numericId);
+                if (found) {
+                    setUniversity(found);
+                    setLoading(false);
+                    return;
+                }
+            }
+
+            // Otherwise try API (MongoDB _id string)
+            const apiUni = await fetchUniversityById(id);
+            if (apiUni) {
+                setUniversity({
+                    id: apiUni._id as any,
+                    name: apiUni.name,
+                    country: apiUni.country,
+                    city: apiUni.location,
+                    image: apiUni.image || 'https://images.unsplash.com/photo-1541339907198-e08756ebafe3?auto=format&fit=crop&q=80',
+                    description: apiUni.description,
+                    founded: apiUni.established,
+                });
+            }
+            setLoading(false);
+        }
+        load();
+    }, [id]);
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center py-24">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            </div>
+        );
+    }
 
     if (!university) {
         notFound();

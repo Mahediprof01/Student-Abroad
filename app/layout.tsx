@@ -5,6 +5,7 @@ import SmoothScroll from "@/components/ui/smooth-scroll";
 import Preloader from "@/components/ui/preloader";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
+import { Toaster } from "sonner";
 
 const font = Inter({ subsets: ["latin"] });
 
@@ -29,6 +30,7 @@ export default function RootLayout({
             <Footer />
           </div>
         </SmoothScroll>
+        <Toaster position="top-right" richColors closeButton />
       </body>
     </html>
   );

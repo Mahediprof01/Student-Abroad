@@ -21,6 +21,14 @@ export const API_PATHS = {
     /** GET /universities/:id — single university by id */
     getById: (id: string) => `/universities/${id}`,
   },
+  reviews: {
+    /** GET /reviews/public — all active reviews */
+    public: "/reviews/public",
+  },
+  successStories: {
+    /** GET /success-stories/public — all active success stories */
+    public: "/success-stories/public",
+  },
 } as const;
 
 export type ApiPaths = typeof API_PATHS;

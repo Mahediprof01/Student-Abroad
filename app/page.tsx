@@ -9,19 +9,21 @@ import { DestinationsSection } from '@/components/home/destinations-section';
 import { PopularCoursesSection } from '@/components/home/popular-courses-section';
 import { TestimonialsSection } from '@/components/home/testimonials-section';
 import { SuccessStoriesSection } from '@/components/home/success-stories-section';
-
 import { IntroSection } from '@/components/home/intro-section';
+import { fetchPublicUniversities } from '@/action/university/server-action';
 
-export default function Home() {
+export default async function Home() {
+  const universities = await fetchPublicUniversities();
+
   return (
     <div className="flex flex-col min-h-screen">
       <HeroSection />
       <ConsultationForm />
-      <LogoMarquee />
+      {/* <LogoMarquee /> */}
       <IntroSection />
       <HighlightsSection />
       <ServicesSection />
-      <PopularCoursesSection />
+      <PopularCoursesSection universities={universities} />
       <FeaturesSection />
       <TestimonialsSection />
       <SuccessStoriesSection />

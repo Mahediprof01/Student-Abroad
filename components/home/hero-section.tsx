@@ -22,8 +22,26 @@ const staggerContainer = {
 
 export function HeroSection() {
     return (
-        <section className="relative h-[90vh] flex items-center justify-center overflow-hidden bg-gradient-to-b from-primary/5 to-background">
-            <div className="absolute inset-0 bg-grid-black/[0.02] -z-10" />
+        <section className="relative h-[90vh] flex items-center justify-center overflow-hidden">
+            {/* Background Video */}
+            <video
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="absolute inset-0 -z-20 w-full h-full object-cover"
+            >
+                <source src="/video/hero.mp4" type="video/mp4" />
+                {/* Fallback to image if video doesn't load */}
+                Your browser does not support the video tag.
+            </video>
+            
+            {/* Dark Overlay for Text Readability */}
+            <div className="absolute inset-0 bg-black/50 -z-10" />
+            
+            {/* Additional Gradient Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-black/70 -z-10" />
+
             <div className="container px-4 text-center z-10">
                 <motion.div
                     initial="hidden"
@@ -32,41 +50,36 @@ export function HeroSection() {
                     className="space-y-6 max-w-4xl mx-auto"
                 >
                     <motion.div variants={fadeInUp}>
-                        <span className="inline-block py-1 px-3 rounded-full bg-primary/10 text-primary text-sm font-semibold mb-4">
+                        <span className="inline-block py-1 px-3 rounded-full bg-white/20 text-white text-sm font-semibold mb-4 backdrop-blur-sm border border-white/20">
                             Your Gateway to Global Education
                         </span>
                     </motion.div>
                     <motion.h1
                         variants={fadeInUp}
-                        className="text-5xl md:text-7xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60"
+                        className="text-5xl md:text-7xl font-bold tracking-tight text-white drop-shadow-lg"
                     >
                         Study Abroad, <br /> Shape Your Future
                     </motion.h1>
                     <motion.p
                         variants={fadeInUp}
-                        className="text-xl text-muted-foreground max-w-2xl mx-auto"
+                        className="text-xl text-gray-100 max-w-2xl mx-auto drop-shadow-md"
                     >
-                        We guide you through every step of your international education journey. From university selection to visa approval and work permit assistance.
+                        We guide you through every step of your international education journey. From university selection to visa approval and overseas employment support.
                     </motion.p>
                     <motion.div
                         variants={fadeInUp}
-                        className="flex items-center justify-center gap-4 pt-4"
+                        className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4"
                     >
-                        <Button size="lg" asChild className="rounded-full px-8">
+                        <Button size="lg" asChild className="rounded-full px-8 bg-[#043168] text-white hover:bg-[#032349]">
                             <Link href="/courses">
                                 Explore Universities <ArrowRight className="ml-2 h-4 w-4" />
                             </Link>
                         </Button>
-                        <Button size="lg" variant="outline" asChild className="rounded-full px-8">
+                        <Button size="lg" asChild className="rounded-full px-8 border-2 border-white text-white hover:bg-white/10 bg-transparent">
                             <Link href="/contact">Book Consultation</Link>
                         </Button>
                     </motion.div>
                 </motion.div>
-            </div>
-
-            {/* Abstract Background Element */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 opacity-30 blur-3xl">
-                <div className="h-[500px] w-[500px] rounded-full bg-primary/20" />
             </div>
         </section>
     );

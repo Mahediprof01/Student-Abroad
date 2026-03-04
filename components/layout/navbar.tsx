@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { GraduationCap } from 'lucide-react';
 import {
     Navbar as ResizableNavbar,
@@ -18,18 +19,21 @@ const navItems = [
     { name: 'Home', link: '/' },
     { name: 'Universities', link: '/courses' },
     { name: 'Success Stories', link: '/success-stories' },
+    { name: 'Employees', link: '/employees' },
     { name: 'About Us', link: '/about' },
     { name: 'Contact Us', link: '/contact' },
 ];
 
 export default function Navbar() {
+    const pathname = usePathname();
+    const isHomePage = pathname === '/';
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     return (
-        <ResizableNavbar className="fixed top-4 inset-x-0">
+        <ResizableNavbar className="fixed top-4 inset-x-0" isHomePage={isHomePage}>
             {/* Desktop Navigation */}
-            <NavBody className="justify-between">
-                <Link href="/" className="flex items-center px-2 hover:opacity-80 transition-opacity cursor-pointer">
+            <NavBody className="justify-between gap-8">
+                <Link href="/" className="flex items-center px-2 flex-shrink-0 hover:opacity-80 transition-opacity cursor-pointer">
                     <img src="/logo.png" alt="Study Abroad Consultancy" className="h-16 w-auto object-contain" />
                 </Link>
 

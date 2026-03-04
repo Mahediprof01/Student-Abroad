@@ -1,20 +1,27 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
-
-const stories = [
-    '/success/1000046615.jpg',
-    '/success/1000046625.jpg',
-    '/success/1000046637.jpg',
-    '/success/1000046648.jpg',
-    '/success/1000046657.jpg',
-    '/success/1000046665.jpg',
-];
+import NextImage from 'next/image';
+import { ArrowRight, Loader2, Trophy, Sparkles } from 'lucide-react';
+import { fetchPublicSuccessStories } from '@/action/success-story/server-action';
+import type { ApiSuccessStory } from '@/action/success-story/types';
 
 export function SuccessStoriesSection() {
+    const [images, setImages] = useState<ApiSuccessStory[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        fetchPublicSuccessStories().then((stories) => {
+            const imageStories = (stories || []).filter(s => s.type === 'image').slice(0, 6);
+            setImages(imageStories);
+            setLoading(false);
+        });
+    }, []);
+
     return (
         <section className="py-20 bg-muted/30">
             <div className="container px-4 mx-auto">
@@ -38,31 +45,53 @@ export function SuccessStoriesSection() {
                     </motion.p>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-12">
-                    {stories.map((image, index) => (
-                        <motion.div
-                            key={index}
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            whileInView={{ opacity: 1, scale: 1 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: index * 0.1 }}
-                            whileHover={{ scale: 1.05 }}
-                            className="aspect-square relative overflow-hidden rounded-xl border border-border/50 shadow-sm cursor-pointer group"
-                        >
-                            <Link href="/success-stories">
-                                <img
-                                    src={image}
-                                    alt={`Success Story ${index + 1}`}
-                                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
-                                    <p className="text-white font-bold text-lg">VISA APPROVED ✅</p>
-                                    <p className="text-white/80 text-sm">Click to view more</p>
-                                </div>
-                            </Link>
-                        </motion.div>
-                    ))}
-                </div>
+                {loading ? (
+                    <div className="flex items-center justify-center py-12">
+                        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                    </div>
+                ) : images.length === 0 ? (
+                    <p className="text-center text-muted-foreground py-12">No success stories yet.</p>
+                ) : (
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+                        {images.map((story, index) => (
+                            <motion.div
+                                key={story._id}
+                                initial={{ opacity: 0, y: 30 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true, margin: "-100px" }}
+                                transition={{ duration: 0.5, delay: index * 0.12, ease: "easeOut" }}
+                            >
+                                <Link href="/success-stories">
+                                    <Card className="h-full flex flex-col overflow-hidden hover:shadow-lg transition-shadow duration-300 border-none cursor-pointer">
+                                        {/* Image - No padding */}
+                                        <div className="relative h-64 overflow-hidden bg-muted flex-shrink-0">
+                                            <NextImage
+                                                src={story.imageUrl || ''}
+                                                alt={story.title || 'Success Story'}
+                                                fill
+                                                unoptimized
+                                                className="object-cover transition-transform duration-500 hover:scale-105"
+                                            />
+                                        </div>
+                                        {/* Content */}
+                                        <CardHeader className="flex-grow pb-3 pt-4">
+                                            <CardTitle className="line-clamp-2 flex items-center gap-2">
+                                                <Trophy className="h-5 w-5 text-yellow-500 flex-shrink-0" />
+                                                {story.title || 'Success Story'}
+                                            </CardTitle>
+                                            {story.description && (
+                                                <CardDescription className="line-clamp-2 flex items-start gap-2 mt-2">
+                                                    <Sparkles className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                                                    <span>{story.description}</span>
+                                                </CardDescription>
+                                            )}
+                                        </CardHeader>
+                                    </Card>
+                                </Link>
+                            </motion.div>
+                        ))}
+                    </div>
+                )}
 
                 <div className="text-center">
                     <Button size="lg" asChild className="rounded-full px-8">

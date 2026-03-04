@@ -46,7 +46,7 @@ export function IntroSection() {
                             transition={{ duration: 0.5, delay: 0.2 }}
                             className="flex flex-wrap gap-4 pt-4"
                         >
-                            {['University Selection', 'Document Processing', 'Visa Assistance', 'Work Permit'].map((item, i) => (
+                            {['University Selection', 'Document Processing', 'Visa Assistance', 'Overseas Employment'].map((item, i) => (
                                 <div key={i} className="flex items-center gap-2 bg-secondary/50 px-4 py-2 rounded-full text-sm font-medium">
                                     <CheckCircle2 className="h-4 w-4 text-primary" />
                                     {item}

@@ -4,58 +4,35 @@ import { useState, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Search, MapPin, Calendar, Globe } from 'lucide-react';
+import { Search, MapPin, Calendar, Globe, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import NextImage from 'next/image';
-import { universitiesData, type University } from '@/lib/universities-data';
 import { fetchPublicUniversities } from '@/action/university/server-action';
 import type { ApiUniversity } from '@/action/university/types';
 
-/** Convert an API university to the local University shape */
-function toLocalUniversity(u: ApiUniversity): University {
-    return {
-        id: u._id as any, // string _id for API universities
-        name: u.name,
-        country: u.country,
-        city: u.location,
-        image: u.image || 'https://images.unsplash.com/photo-1541339907198-e08756ebafe3?auto=format&fit=crop&q=80',
-        description: u.description,
-        founded: u.established,
-    };
-}
-
-const HARDCODED_COUNTRIES = ['South Korea', 'Italy', 'Malta', 'Austria', 'Hungary'];
 const UNIVERSITIES_PER_PAGE = 12;
 
 export default function UniversitiesPage() {
-    const [allUniversities, setAllUniversities] = useState<University[]>(universitiesData);
+    const [allUniversities, setAllUniversities] = useState<ApiUniversity[]>([]);
     const [selectedCountry, setSelectedCountry] = useState('All');
     const [searchQuery, setSearchQuery] = useState('');
     const [visibleCount, setVisibleCount] = useState(UNIVERSITIES_PER_PAGE);
+    const [loading, setLoading] = useState(true);
 
-    // Fetch API universities and merge with hardcoded
+    // Fetch API universities on mount
     useEffect(() => {
-        fetchPublicUniversities().then((apiUnis) => {
-            if (apiUnis.length > 0) {
-                const converted = apiUnis.map(toLocalUniversity);
-                // Merge: hardcoded first, then API (avoiding name duplicates)
-                const hardcodedNames = new Set(universitiesData.map(u => u.name.toLowerCase()));
-                const newFromApi = converted.filter(u => !hardcodedNames.has(u.name.toLowerCase()));
-                setAllUniversities([...universitiesData, ...newFromApi]);
-            }
+        fetchPublicUniversities().then((unis) => {
+            setAllUniversities(unis || []);
+            setLoading(false);
         });
     }, []);
 
-    // Build dynamic country list
+    // Build dynamic country list from API data
     const countries = useMemo(() => {
         const countrySet = new Set(allUniversities.map(u => u.country));
-        // Ensure hardcoded countries appear first, then any new from API
-        const ordered = HARDCODED_COUNTRIES.filter(c => countrySet.has(c));
-        countrySet.forEach(c => {
-            if (!ordered.includes(c)) ordered.push(c);
-        });
+        const ordered = Array.from(countrySet).sort();
         return ['All', ...ordered];
     }, [allUniversities]);
 
@@ -77,6 +54,17 @@ export default function UniversitiesPage() {
         setSelectedCountry(country);
         setVisibleCount(UNIVERSITIES_PER_PAGE);
     };
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center py-24">
+                <div className="flex flex-col items-center gap-3">
+                    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                    <p className="text-muted-foreground">Loading universities...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="py-12 md:py-24 space-y-12">
@@ -125,10 +113,10 @@ export default function UniversitiesPage() {
             <div className="container px-4 mx-auto">
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {displayedUniversities.map((uni) => (
-                        <Card key={uni.id} className="h-full flex flex-col hover:shadow-xl transition-shadow duration-300 overflow-hidden group border-none shadow-sm bg-card/50 backdrop-blur-sm">
+                        <Card key={uni._id} className="h-full flex flex-col hover:shadow-xl transition-shadow duration-300 overflow-hidden group border-none shadow-sm bg-card/50 backdrop-blur-sm">
                             <div className="h-48 overflow-hidden relative">
                                 <NextImage
-                                    src={uni.image}
+                                    src={uni.image || 'https://images.unsplash.com/photo-1541339907198-e08756ebafe3?auto=format&fit=crop&q=80'}
                                     alt={uni.name}
                                     fill
                                     unoptimized
@@ -146,25 +134,36 @@ export default function UniversitiesPage() {
                             <CardContent className="flex-grow space-y-3 pb-4">
                                 <div className="flex items-center gap-2 text-sm font-medium">
                                     <MapPin className="h-4 w-4 text-primary/70 flex-shrink-0" />
-                                    <span className="text-muted-foreground">{uni.city}, {uni.country}</span>
+                                    <span className="text-muted-foreground">{uni.location}, {uni.country}</span>
                                 </div>
-                                {uni.founded && (
+                                {uni.established && (
                                     <div className="flex items-center gap-2 text-sm font-medium">
                                         <Calendar className="h-4 w-4 text-primary/70 flex-shrink-0" />
-                                        <span className="text-muted-foreground">Founded {uni.founded}</span>
+                                        <span className="text-muted-foreground">Founded {uni.established}</span>
                                     </div>
                                 )}
                             </CardContent>
                             <CardFooter className="pt-0">
                                 <Button className="w-full rounded-lg font-bold h-11 transition-all duration-300" variant="outline" asChild>
-                                    <Link href={`/courses/${uni.id}`}>Learn More</Link>
+                                    <Link href={`/courses/${uni._id}`}>Learn More</Link>
                                 </Button>
                             </CardFooter>
                         </Card>
                     ))}
                 </div>
 
-                {filteredUniversities.length === 0 && (
+                {allUniversities.length === 0 && !loading && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="text-center py-12 text-muted-foreground"
+                    >
+                        <Globe className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                        <p className="text-lg">No universities available.</p>
+                    </motion.div>
+                )}
+
+                {filteredUniversities.length === 0 && allUniversities.length > 0 && (
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}

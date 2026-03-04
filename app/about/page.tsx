@@ -148,7 +148,7 @@ export default function AboutPage() {
                                     Established in 2018, Study Abroad Consultancy has earned a reputation as one of the most reliable and transparent study abroad consultancies in the country. We specialize in assisting students who aspire to pursue undergraduate and postgraduate studies in top-ranked universities across Asia and Europe.
                                 </p>
                                 <p className="text-lg text-muted-foreground leading-relaxed mt-4">
-                                    From university selection, document preparation, and admission support to visa assistance, work permit processing, and pre-departure briefings, our team of experienced counsellors ensures a smooth, step-by-step process for every applicant.
+                                    From university selection, document preparation, and admission support to visa assistance, overseas employment support, and pre-departure briefings, our team of experienced counsellors ensures a smooth, step-by-step process for every applicant.
                                 </p>
                             </motion.div>
 

@@ -38,6 +38,7 @@ const initialValues: ContactFormValues = {
   phone: "",
   subject: "",
   message: "",
+  cgpa: "",
 };
 
 // ─── Store ────────────────────────────────────────────────────────────────────

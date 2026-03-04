@@ -6,6 +6,7 @@ export interface ContactFormValues {
   phone: string;
   subject: string;
   message: string;
+  cgpa: string;
 }
 
 // ─── Response ────────────────────────────────────────────────────────────────

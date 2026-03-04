@@ -49,6 +49,11 @@ const contactSchema = Yup.object({
     .min(10, "Message must be at least 10 characters")
     .max(5000, "Message must be at most 5000 characters")
     .required("Message is required"),
+
+  cgpa: Yup.string()
+    .trim()
+    .max(10, "CGPA must be at most 10 characters")
+    .optional(),
 });
 
 // ─── Server Action ────────────────────────────────────────────────────────────

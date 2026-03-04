@@ -2,7 +2,9 @@
 
 import { motion } from 'framer-motion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { PlayCircle, Image as ImageIcon } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { PlayCircle, Image as ImageIcon, Trophy, Sparkles } from 'lucide-react';
+import NextImage from 'next/image';
 import type { ApiSuccessStory } from '@/action/success-story/types';
 
 function getYouTubeEmbedUrl(url: string): string | null {
@@ -45,12 +47,12 @@ export default function SuccessGallery({ images, videos }: SuccessGalleryProps) 
                 </TabsList>
             </div>
 
-            {/* Photos */}
+            {/* Photos - Card Layout */}
             <TabsContent value="photos" className="space-y-8">
                 {images.length === 0 ? (
                     <p className="text-center text-muted-foreground py-16">No photos yet.</p>
                 ) : (
-                    <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {images.map((story, index) => (
                             <motion.div
                                 key={story._id ?? index}
@@ -58,19 +60,32 @@ export default function SuccessGallery({ images, videos }: SuccessGalleryProps) 
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: Math.min(index * 0.05, 1) }}
-                                className="break-inside-avoid relative group rounded-2xl overflow-hidden shadow-sm border"
                             >
-                                <img
-                                    src={story.imageUrl}
-                                    alt={story.title ?? `Success Story ${index + 1}`}
-                                    className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
-                                    <div className="text-white">
-                                        <p className="font-bold">{story.title ?? 'Visa Approved'}</p>
-                                        <p className="text-sm opacity-90">{story.description ?? 'Study Abroad Consultancy'}</p>
+                                <Card className="h-full flex flex-col overflow-hidden hover:shadow-lg transition-shadow duration-300 border-none">
+                                    {/* Image - No padding */}
+                                    <div className="relative h-64 overflow-hidden bg-muted flex-shrink-0">
+                                        <NextImage
+                                            src={story.imageUrl || ''}
+                                            alt={story.title || 'Success Story'}
+                                            fill
+                                            unoptimized
+                                            className="object-cover transition-transform duration-500 hover:scale-105"
+                                        />
                                     </div>
-                                </div>
+                                    {/* Content */}
+                                    <CardHeader className="flex-grow pb-3 pt-4">
+                                        <CardTitle className="line-clamp-2 flex items-center gap-2">
+                                            <Trophy className="h-5 w-5 text-yellow-500 flex-shrink-0" />
+                                            {story.title || 'Success Story'}
+                                        </CardTitle>
+                                        {story.description && (
+                                            <CardDescription className="line-clamp-2 flex items-start gap-2 mt-2">
+                                                <Sparkles className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                                                <span>{story.description}</span>
+                                            </CardDescription>
+                                        )}
+                                    </CardHeader>
+                                </Card>
                             </motion.div>
                         ))}
                     </div>
@@ -97,11 +112,11 @@ export default function SuccessGallery({ images, videos }: SuccessGalleryProps) 
                                     className="rounded-2xl overflow-hidden border shadow-sm"
                                 >
                                     {embedUrl ? (
-                                        <div className="relative">
+                                        <div className="relative bg-black rounded-2xl">
                                             <iframe
                                                 src={embedUrl}
                                                 title={story.title ?? `Video ${index + 1}`}
-                                                className="w-full aspect-video"
+                                                className="w-full aspect-video rounded-2xl"
                                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                                 allowFullScreen
                                             />

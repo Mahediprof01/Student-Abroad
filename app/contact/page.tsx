@@ -46,6 +46,11 @@ const contactSchema = Yup.object({
     .min(10, "Message must be at least 10 characters")
     .max(5000, "Message must be at most 5000 characters")
     .required("Message is required"),
+
+  cgpa: Yup.string()
+    .trim()
+    .max(10, "CGPA must be at most 10 characters")
+    .optional(),
 });
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -117,7 +122,7 @@ export default function ContactPage() {
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
           <h1 className="text-4xl md:text-5xl font-bold">Contact Us</h1>
           <p className="text-muted-foreground text-lg">
-            Have questions about studying abroad or work permits? Our team is
+            Have questions about studying abroad or overseas employment opportunities? Our team is
             here to help you every step of the way. Send us a message or visit
             our office.
           </p>
@@ -199,6 +204,22 @@ export default function ContactPage() {
                   />
                   {fieldErrors.subject && (
                     <p className="text-xs text-destructive">{fieldErrors.subject}</p>
+                  )}
+                </div>
+
+                {/* CGPA */}
+                <div className="space-y-2">
+                  <Label htmlFor="cgpa">CGPA <span className="text-muted-foreground font-normal">(optional)</span></Label>
+                  <Input
+                    id="cgpa"
+                    placeholder="e.g. 3.75"
+                    value={values.cgpa}
+                    onChange={(e) => setField("cgpa", e.target.value)}
+                    onBlur={(e) => validateField("cgpa", e.target.value)}
+                    aria-invalid={!!fieldErrors.cgpa}
+                  />
+                  {fieldErrors.cgpa && (
+                    <p className="text-xs text-destructive">{fieldErrors.cgpa}</p>
                   )}
                 </div>
 
@@ -297,11 +318,18 @@ export default function ContactPage() {
               </div>
             </div>
 
-            {/* Map Placeholder */}
-            <div className="rounded-xl overflow-hidden bg-muted h-[300px] flex items-center justify-center border">
-              <p className="text-muted-foreground flex items-center gap-2">
-                <MapPin className="h-5 w-5" /> Google Maps Integration
-              </p>
+            {/* Google Map */}
+            <div className="rounded-xl overflow-hidden h-[300px] border">
+              <iframe
+                title="Office Location"
+                src="https://maps.google.com/maps?q=Moghbazar%2C+Razzaq+Plaza%2C+Dhaka-1217%2C+Bangladesh&t=&z=17&ie=UTF8&iwloc=&output=embed"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
             </div>
           </div>
         </div>

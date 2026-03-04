@@ -79,81 +79,82 @@ export default function UniversityPage({ params }: { params: Promise<{ id: strin
                 </Link>
 
                 {/* Hero Section */}
-                <div className="grid lg:grid-cols-2 gap-12 mb-12">
-                    <div>
-                        <Badge className="mb-4 text-sm">{university.country}</Badge>
-                        <h1 className="text-4xl md:text-5xl font-bold mb-4">{university.name}</h1>
-                        <div className="flex items-center gap-2 text-muted-foreground mb-6">
-                            <MapPin className="h-5 w-5 text-primary" />
-                            <span className="text-lg">{university.city}, {university.country}</span>
-                        </div>
-                        
-                        {university.description && (
-                            <p className="text-lg text-muted-foreground mb-6">
-                                {university.description}
-                            </p>
-                        )}
+                <div className="mb-12 space-y-8">
+                    {/* Full image — no crop */}
+                    <div className="rounded-2xl overflow-hidden shadow-xl border bg-muted/20">
+                        <NextImage
+                            src={university.image}
+                            alt={university.name}
+                            width={1200}
+                            height={600}
+                            unoptimized
+                            className="w-full h-auto object-contain max-h-[480px]"
+                        />
+                    </div>
 
-                        <div className="grid grid-cols-2 gap-4">
+                    {/* Info row */}
+                    <div className="grid lg:grid-cols-3 gap-8 min-w-0">
+                        {/* Left: title + description */}
+                        <div className="lg:col-span-2 space-y-4 min-w-0">
+                            <Badge className="text-sm">{university.country}</Badge>
+                            <h1 className="text-3xl md:text-4xl font-bold">{university.name}</h1>
+                            <div className="flex items-center gap-2 text-muted-foreground">
+                                <MapPin className="h-4 w-4 text-primary shrink-0" />
+                                <span>{university.city}, {university.country}</span>
+                            </div>
+                            {university.description && (
+                                <p className="text-base text-muted-foreground break-words leading-relaxed">
+                                    {university.description}
+                                </p>
+                            )}
+                            <div className="pt-2">
+                                <Button size="sm" asChild>
+                                    <Link href="/contact">Get More Information</Link>
+                                </Button>
+                            </div>
+                        </div>
+
+                        {/* Right: stat cards */}
+                        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-1 gap-3 content-start w-full min-w-0">
                             {university.founded && (
                                 <Card className="bg-muted/50">
-                                    <CardContent className="p-4 flex items-center gap-3">
-                                        <Calendar className="h-5 w-5 text-primary" />
+                                    <CardContent className="p-3 flex items-center gap-3">
+                                        <Calendar className="h-4 w-4 text-primary shrink-0" />
                                         <div>
-                                            <p className="text-sm text-muted-foreground">Founded</p>
-                                            <p className="font-semibold">{university.founded}</p>
+                                            <p className="text-xs text-muted-foreground">Founded</p>
+                                            <p className="font-semibold text-sm">{university.founded}</p>
                                         </div>
                                     </CardContent>
                                 </Card>
                             )}
                             <Card className="bg-muted/50">
-                                <CardContent className="p-4 flex items-center gap-3">
-                                    <Globe className="h-5 w-5 text-primary" />
+                                <CardContent className="p-3 flex items-center gap-3">
+                                    <Globe className="h-4 w-4 text-primary shrink-0" />
                                     <div>
-                                        <p className="text-sm text-muted-foreground">Country</p>
-                                        <p className="font-semibold">{university.country}</p>
+                                        <p className="text-xs text-muted-foreground">Country</p>
+                                        <p className="font-semibold text-sm">{university.country}</p>
                                     </div>
                                 </CardContent>
                             </Card>
                             <Card className="bg-muted/50">
-                                <CardContent className="p-4 flex items-center gap-3">
-                                    <Building2 className="h-5 w-5 text-primary" />
+                                <CardContent className="p-3 flex items-center gap-3">
+                                    <Building2 className="h-4 w-4 text-primary shrink-0" />
                                     <div>
-                                        <p className="text-sm text-muted-foreground">Location</p>
-                                        <p className="font-semibold">{university.city}</p>
+                                        <p className="text-xs text-muted-foreground">Location</p>
+                                        <p className="font-semibold text-sm">{university.city}</p>
                                     </div>
                                 </CardContent>
                             </Card>
                             <Card className="bg-muted/50">
-                                <CardContent className="p-4 flex items-center gap-3">
-                                    <Award className="h-5 w-5 text-primary" />
+                                <CardContent className="p-3 flex items-center gap-3">
+                                    <Award className="h-4 w-4 text-primary shrink-0" />
                                     <div>
-                                        <p className="text-sm text-muted-foreground">Type</p>
-                                        <p className="font-semibold">University</p>
+                                        <p className="text-xs text-muted-foreground">Type</p>
+                                        <p className="font-semibold text-sm">University</p>
                                     </div>
                                 </CardContent>
                             </Card>
                         </div>
-
-                        <div className="flex gap-4 mt-6">
-                            <Button size="lg" className="flex-1" asChild>
-                                <Link href="/contact">Get More Information</Link>
-                            </Button>
-                            <Button size="lg" variant="outline" className="flex-1" asChild>
-                                <Link href="/contact">Apply Now</Link>
-                            </Button>
-                        </div>
-                    </div>
-
-                    <div className="relative h-[400px] lg:h-full rounded-2xl overflow-hidden shadow-2xl">
-                        <NextImage
-                            src={university.image}
-                            alt={university.name}
-                            fill
-                            unoptimized
-                            className="object-cover"
-                            sizes="(max-width: 1024px) 100vw, 50vw"
-                        />
                     </div>
                 </div>
 
@@ -169,7 +170,7 @@ export default function UniversityPage({ params }: { params: Promise<{ id: strin
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-4 text-muted-foreground">
-                                <p>
+                                <p className="break-words">
                                     {university.name} is a prestigious institution located in {university.city}, {university.country}. 
                                     {university.founded && ` Founded in ${university.founded}, it`} has established itself as a leading educational institution.
                                 </p>

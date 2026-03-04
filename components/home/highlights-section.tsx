@@ -17,9 +17,9 @@ const highlights: HighlightCard[] = [
     {
         id: '1',
         country: 'STUDY IN SOUTH KOREA',
-        title: 'Premium Universities & Work Permits',
+        title: 'Premium Universities & Overseas Employment',
         subtitle: 'Part-Time Job Opportunities Available',
-        description: 'Study at prestigious Korean universities with work opportunities and scholarships',
+        description: 'Study at prestigious Korean universities with overseas employment opportunities and scholarships',
         image: '/korea.jpg',
         color: '#FFD700',
     },
@@ -68,7 +68,7 @@ export function HighlightsSection() {
                         Featured Study Destinations
                     </h2>
                     <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                        Explore top universities in South Korea, Italy, Malta, Austria, and Hungary with work permit opportunities and expert guidance
+                        Explore top universities in South Korea, Italy, Malta, Austria, and Hungary with overseas employment opportunities and expert guidance
                     </p>
                 </motion.div>
 

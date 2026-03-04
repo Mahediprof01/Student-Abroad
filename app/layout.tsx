@@ -6,6 +6,7 @@ import Preloader from "@/components/ui/preloader";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import { Toaster } from "sonner";
+import { MouseTrail } from "@/components/ui/mouse-trail";
 
 const font = Inter({ subsets: ["latin"] });
 
@@ -24,6 +25,7 @@ export default function RootLayout({
       <body className={font.className}>
         <Preloader />
         <SmoothScroll>
+          <MouseTrail />
           <div className="flex flex-col min-h-screen">
             <Navbar />
             <main className="flex-grow">{children}</main>

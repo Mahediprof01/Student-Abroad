@@ -8,18 +8,20 @@ import {
     useMotionValueEvent,
 } from "framer-motion";
 
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 
 
 interface NavbarProps {
     children: React.ReactNode;
     className?: string;
+    isHomePage?: boolean;
 }
 
 interface NavBodyProps {
     children: React.ReactNode;
     className?: string;
     visible?: boolean;
+    isHomePage?: boolean;
 }
 
 interface NavItemsProps {
@@ -29,6 +31,8 @@ interface NavItemsProps {
     }[];
     className?: string;
     onItemClick?: () => void;
+    visible?: boolean;
+    isHomePage?: boolean;
 }
 
 interface MobileNavProps {
@@ -49,19 +53,24 @@ interface MobileNavMenuProps {
     onClose: () => void;
 }
 
-export const Navbar = ({ children, className }: NavbarProps) => {
+export const Navbar = ({ children, className, isHomePage = true }: NavbarProps) => {
     const ref = useRef<HTMLDivElement>(null);
     const { scrollY } = useScroll({
         target: ref,
         offset: ["start start", "end start"],
     });
-    const [visible, setVisible] = useState<boolean>(false);
+    // Track if scrolled past threshold (for background/blur effect)
+    const [hasScrolled, setHasScrolled] = useState<boolean>(false);
+
+    useEffect(() => {
+        setHasScrolled(false);
+    }, [isHomePage]);
 
     useMotionValueEvent(scrollY, "change", (latest) => {
         if (latest > 100) {
-            setVisible(true);
+            setHasScrolled(true);
         } else {
-            setVisible(false);
+            setHasScrolled(false);
         }
     });
 
@@ -74,8 +83,8 @@ export const Navbar = ({ children, className }: NavbarProps) => {
             {React.Children.map(children, (child) =>
                 React.isValidElement(child)
                     ? React.cloneElement(
-                        child as React.ReactElement<{ visible?: boolean }>,
-                        { visible },
+                        child as React.ReactElement<{ visible?: boolean; isHomePage?: boolean }>,
+                        { visible: hasScrolled, isHomePage },
                     )
                     : child,
             )}
@@ -83,7 +92,7 @@ export const Navbar = ({ children, className }: NavbarProps) => {
     );
 };
 
-export const NavBody = ({ children, className, visible }: NavBodyProps) => {
+export const NavBody = ({ children, className, visible, isHomePage = true }: NavBodyProps) => {
     return (
         <motion.div
             animate={{
@@ -91,7 +100,7 @@ export const NavBody = ({ children, className, visible }: NavBodyProps) => {
                 boxShadow: visible
                     ? "0 0 24px rgba(34, 42, 53, 0.06), 0 1px 1px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(34, 42, 53, 0.04), 0 0 4px rgba(34, 42, 53, 0.08), 0 16px 68px rgba(47, 48, 55, 0.05), 0 1px 0 rgba(255, 255, 255, 0.1) inset"
                     : "none",
-                width: visible ? "40%" : "100%",
+                width: "100%",
                 y: visible ? 20 : 0,
             }}
             transition={{
@@ -107,20 +116,31 @@ export const NavBody = ({ children, className, visible }: NavBodyProps) => {
                 visible && "bg-white/80 dark:bg-neutral-950/80",
                 className,
             )}
+            suppressHydrationWarning
         >
-            {children}
+            {React.Children.map(children, (child) =>
+                React.isValidElement(child) && (child.type as any)?.name === "NavItems"
+                    ? React.cloneElement(
+                        child as React.ReactElement<{ visible?: boolean; isHomePage?: boolean }>,
+                        { visible, isHomePage } as any,
+                    )
+                    : child,
+            )}
         </motion.div>
     );
 };
 
-export const NavItems = ({ items, className, onItemClick }: NavItemsProps) => {
+export const NavItems = ({ items, className, onItemClick, visible, isHomePage = true }: NavItemsProps) => {
     const [hovered, setHovered] = useState<number | null>(null);
+    // Text should be dark if scrolled OR not on home page
+    const isDarkText = visible || !isHomePage;
 
     return (
         <motion.div
             onMouseLeave={() => setHovered(null)}
             className={cn(
-                "absolute inset-0 hidden flex-1 flex-row items-center justify-center space-x-2 text-sm font-medium text-zinc-600 transition duration-200 hover:text-zinc-800 lg:flex lg:space-x-2",
+                "absolute inset-0 hidden flex-1 flex-row items-center justify-center space-x-2 text-sm font-medium transition duration-200 lg:flex lg:space-x-2",
+                isDarkText ? "text-neutral-600 hover:text-neutral-800" : "text-white hover:text-white/80",
                 className,
             )}
         >
@@ -128,14 +148,20 @@ export const NavItems = ({ items, className, onItemClick }: NavItemsProps) => {
                 <a
                     onMouseEnter={() => setHovered(idx)}
                     onClick={onItemClick}
-                    className="relative px-4 py-2 text-neutral-600 dark:text-neutral-300"
+                    className={cn(
+                        "relative px-4 py-2 transition-colors duration-200",
+                        isDarkText ? "text-neutral-600 hover:text-neutral-800" : "text-white hover:text-white/80"
+                    )}
                     key={`link-${idx}`}
                     href={item.link}
                 >
                     {hovered === idx && (
                         <motion.div
                             layoutId="hovered"
-                            className="absolute inset-0 h-full w-full rounded-full bg-gray-100 dark:bg-neutral-800"
+                            className={cn(
+                                "absolute inset-0 h-full w-full rounded-full",
+                                isDarkText ? "bg-gray-200" : "bg-white/10"
+                            )}
                         />
                     )}
                     <span className="relative z-20">{item.name}</span>
@@ -265,15 +291,15 @@ export const NavbarButton = ({
         | React.ComponentPropsWithoutRef<"button">
     )) => {
     const baseStyles =
-        "px-4 py-2 rounded-md bg-white button bg-white text-black text-sm font-bold relative cursor-pointer hover:-translate-y-0.5 transition duration-200 inline-block text-center";
+        "px-4 py-2 rounded-md font-bold relative cursor-pointer hover:-translate-y-0.5 transition duration-200 inline-block text-center";
 
     const variantStyles = {
         primary:
-            "shadow-[0_0_24px_rgba(34,_42,_53,_0.06),_0_1px_1px_rgba(0,_0,_0,_0.05),_0_0_0_1px_rgba(34,_42,_53,_0.04),_0_0_4px_rgba(34,_42,_53,_0.08),_0_16px_68px_rgba(47,_48,_55,_0.05),_0_1px_0_rgba(255,_255,_255,_0.1)_inset]",
+            "bg-[#043168] text-white shadow-[0_0_24px_rgba(4,49,104,0.15),_0_1px_1px_rgba(0,_0,_0,_0.05),_0_0_0_1px_rgba(4,49,104,0.1),_0_0_4px_rgba(4,49,104,0.12),_0_16px_68px_rgba(4,49,104,0.1),_0_1px_0_rgba(255,_255,_255,_0.1)_inset] hover:bg-[#032349]",
         secondary: "bg-transparent shadow-none dark:text-white",
         dark: "bg-black text-white shadow-[0_0_24px_rgba(34,_42,_53,_0.06),_0_1px_1px_rgba(0,_0,_0,_0.05),_0_0_0_1px_rgba(34,_42,_53,_0.04),_0_0_4px_rgba(34,_42,_53,_0.08),_0_16px_68px_rgba(47,_48,_55,_0.05),_0_1px_0_rgba(255,_255,_255,_0.1)_inset]",
         gradient:
-            "bg-gradient-to-b from-blue-500 to-blue-700 text-white shadow-[0px_2px_0px_0px_rgba(255,255,255,0.3)_inset]",
+            "bg-gradient-to-b from-[#043168] to-[#032349] text-white shadow-[0px_2px_0px_0px_rgba(255,255,255,0.3)_inset]",
     };
 
     return (

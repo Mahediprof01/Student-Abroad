@@ -8,27 +8,65 @@ import { Button } from '@/components/ui/button';
 import { Calendar, MapPin, University, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import NextImage from 'next/image';
-import { universitiesData } from '@/lib/universities-data';
 import { cn } from '@/lib/utils';
+import type { ApiUniversity } from '@/action/university/types';
 
-const tabs = [
-    { id: 'all', label: 'All' },
-    { id: 'South Korea', label: 'South Korea' },
-    { id: 'Italy', label: 'Italy' },
-    { id: 'Malta', label: 'Malta' },
-    { id: 'Austria', label: 'Austria' },
-    { id: 'Hungary', label: 'Hungary' },
-];
+const MAX_COUNTRIES = 5;
+const MAX_PER_COUNTRY = 4;
 
-export function PopularCoursesSection() {
+interface Props {
+    universities: ApiUniversity[];
+}
+
+export function PopularCoursesSection({ universities }: Props) {
     const [activeTab, setActiveTab] = useState('all');
 
-    // Memoize filtered universities to avoid unnecessary re-calculations
-    const filteredUniversities = useMemo(() =>
-        activeTab === 'all'
-            ? universitiesData
-            : universitiesData.filter(uni => uni.country === activeTab),
-        [activeTab]);
+    // Ensure universities is always an array
+    const data = Array.isArray(universities) ? universities : [];
+
+    // Pick up to MAX_COUNTRIES unique countries in order of first appearance
+    const countries = useMemo(() => {
+        const seen = new Set<string>();
+        const result: string[] = [];
+        for (const u of data) {
+            if (!seen.has(u.country)) {
+                seen.add(u.country);
+                result.push(u.country);
+                if (result.length === MAX_COUNTRIES) break;
+            }
+        }
+        return result;
+    }, [data]);
+
+    const tabs = useMemo(() => [
+        { id: 'all', label: 'All' },
+        ...countries.map(c => ({ id: c, label: c })),
+    ], [countries]);
+
+    // For "all": up to MAX_PER_COUNTRY per country (only from the top-5 countries)
+    // For a specific country: up to MAX_PER_COUNTRY
+    const displayed = useMemo(() => {
+        if (activeTab === 'all') {
+            const countMap = new Map<string, number>();
+            const result: ApiUniversity[] = [];
+            for (const u of data) {
+                if (!countries.includes(u.country)) continue;
+                const count = countMap.get(u.country) ?? 0;
+                if (count < MAX_PER_COUNTRY) {
+                    result.push(u);
+                    countMap.set(u.country, count + 1);
+                }
+            }
+            return result;
+        }
+        return data
+            .filter(u => u.country === activeTab)
+            .slice(0, MAX_PER_COUNTRY);
+    }, [activeTab, data, countries]);
+
+    const totalForTab = activeTab === 'all'
+        ? data.filter(u => countries.includes(u.country)).length
+        : data.filter(u => u.country === activeTab).length;
 
     return (
         <section className="py-20 bg-muted/30 overflow-hidden">
@@ -82,10 +120,10 @@ export function PopularCoursesSection() {
 
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 min-h-[400px]">
                     <AnimatePresence mode="popLayout">
-                        {filteredUniversities.length > 0 ? (
-                            filteredUniversities.slice(0, 8).map((uni, index) => (
+                        {displayed.length > 0 ? (
+                            displayed.map((uni, index) => (
                                 <motion.div
-                                    key={`${uni.id}-${activeTab}`}
+                                    key={`${uni._id}-${activeTab}`}
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, scale: 0.95 }}
@@ -95,7 +133,7 @@ export function PopularCoursesSection() {
                                     <Card className="h-full hover:shadow-xl transition-all duration-300 flex flex-col group border-none shadow-sm">
                                         <div className="relative h-48 overflow-hidden rounded-t-xl">
                                             <NextImage
-                                                src={uni.image}
+                                                src={uni.image || 'https://images.unsplash.com/photo-1541339907198-e08756ebafe3?auto=format&fit=crop&q=80'}
                                                 alt={uni.name}
                                                 fill
                                                 unoptimized
@@ -114,21 +152,21 @@ export function PopularCoursesSection() {
                                             <h3 className="text-xl font-bold line-clamp-1 group-hover:text-primary transition-colors duration-300">{uni.name}</h3>
                                             <div className="flex items-center text-sm text-muted-foreground gap-2">
                                                 <MapPin className="h-4 w-4 text-primary/70" />
-                                                <span className="line-clamp-1 font-medium">{uni.city}, {uni.country}</span>
+                                                <span className="line-clamp-1 font-medium">{uni.location}, {uni.country}</span>
                                             </div>
                                         </CardHeader>
                                         <CardContent className="space-y-4 flex-grow pb-4">
-                                            {uni.founded && (
+                                            {uni.established && (
                                                 <div className="flex items-center gap-2 text-sm font-semibold">
                                                     <div className="flex items-center gap-1.5 text-muted-foreground bg-muted/50 px-2.5 py-1 rounded-md">
-                                                        <Calendar className="h-4 w-4 text-primary" /> Founded {uni.founded}
+                                                        <Calendar className="h-4 w-4 text-primary" /> Founded {uni.established}
                                                     </div>
                                                 </div>
                                             )}
                                         </CardContent>
                                         <CardFooter className="pt-0">
                                             <Button variant="outline" className="w-full border-primary/20 hover:bg-primary hover:text-primary-foreground group-hover:border-primary transition-all duration-500 font-bold h-11 rounded-lg" asChild>
-                                                <Link href={`/courses/${uni.id}`}>
+                                                <Link href={`/courses/${uni._id}`}>
                                                     View Details
                                                     <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
                                                 </Link>
@@ -155,7 +193,7 @@ export function PopularCoursesSection() {
                     </AnimatePresence>
                 </div>
 
-                {filteredUniversities.length > 8 && (
+                {totalForTab > displayed.length && (
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
@@ -164,7 +202,7 @@ export function PopularCoursesSection() {
                     >
                         <Button size="lg" className="rounded-full px-12 h-14 text-lg font-bold shadow-xl hover:scale-105 transition-all" asChild>
                             <Link href="/courses">
-                                Explore All {filteredUniversities.length} Universities <ArrowRight className="ml-2 h-5 w-5" />
+                                Explore All Universities <ArrowRight className="ml-2 h-5 w-5" />
                             </Link>
                         </Button>
                     </motion.div>

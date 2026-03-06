@@ -4,8 +4,9 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Target, Heart, ShieldCheck, Globe2, Sparkles, GraduationCap, Phone, Mail } from 'lucide-react';
+import { Target, Heart, ShieldCheck, Sparkles, GraduationCap, Phone, Mail } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 // Team Members Data
 const teamMembers = [
@@ -105,13 +106,13 @@ export default function AboutPage() {
                             className="relative"
                         >
                             <div className="aspect-[4/5] rounded-3xl overflow-hidden bg-muted relative group">
-                                {/* Placeholder for specific image */}
-                                <div className="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 flex items-center justify-center">
-                                    <Globe2 className="h-24 w-24 text-muted-foreground/20" />
-                                    <span className="absolute bottom-8 left-8 text-muted-foreground font-medium">
-                                        Study Abroad Consultancy Office / Team Image
-                                    </span>
-                                </div>
+                                <Image
+                                    src="/banner.png"
+                                    alt="Study Abroad Consultancy office banner"
+                                    fill
+                                    className="object-cover"
+                                    priority
+                                />
                                 <div className="absolute inset-0 ring-1 ring-inset ring-black/10 rounded-3xl" />
                             </div>
 

@@ -33,7 +33,7 @@ export default function Navbar() {
         <ResizableNavbar className="fixed top-4 inset-x-0" isHomePage={isHomePage}>
             {/* Desktop Navigation */}
             <NavBody className="justify-between gap-8">
-                <Link href="/" className="flex items-center px-2 flex-shrink-0 hover:opacity-80 transition-opacity cursor-pointer">
+                <Link href="/" className="relative z-50 flex items-center px-2 flex-shrink-0 hover:opacity-80 transition-opacity cursor-pointer">
                     <img src="/logo.png" alt="Study Abroad Consultancy" className="h-16 w-auto object-contain" />
                 </Link>
 
@@ -49,7 +49,7 @@ export default function Navbar() {
             {/* Mobile Navigation */}
             <MobileNav visible={true} className="mt-2">
                 <MobileNavHeader>
-                    <Link href="/" className="flex items-center px-2 hover:opacity-80 transition-opacity cursor-pointer">
+                    <Link href="/" className="relative z-50 flex items-center px-2 hover:opacity-80 transition-opacity cursor-pointer">
                         <img src="/logo.png" alt="Study Abroad Consultancy" className="h-12 w-auto object-contain" />
                     </Link>
                     <MobileNavToggle

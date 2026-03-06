@@ -2,6 +2,7 @@
 
 import { motion } from 'motion/react';
 import { ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 
 interface HighlightCard {
     id: string;
@@ -20,7 +21,7 @@ const highlights: HighlightCard[] = [
         title: 'Premium Universities & Overseas Employment',
         subtitle: 'Part-Time Job Opportunities Available',
         description: 'Study at prestigious Korean universities with overseas employment opportunities and scholarships',
-        image: '/korea.jpg',
+        image: '/south-korea.jpg',
         color: '#FFD700',
     },
     {
@@ -29,7 +30,7 @@ const highlights: HighlightCard[] = [
         title: 'Excellence in Arts & Sciences',
         subtitle: 'Historic Universities | Cultural Experience',
         description: 'Experience world-class education in Italy with rich cultural heritage',
-        image: '/flags/italy.png',
+        image: '/italy-des.jpg',
         color: '#009246',
     },
     {
@@ -38,7 +39,7 @@ const highlights: HighlightCard[] = [
         title: 'English-Speaking Island Nation',
         subtitle: 'EU Education | Mediterranean Lifestyle',
         description: 'Study in English at EU-accredited universities in beautiful Malta',
-        image: '/flags/malta.png',
+        image: '/malta-des.jpg',
         color: '#CF142B',
     },
     {
@@ -47,7 +48,7 @@ const highlights: HighlightCard[] = [
         title: 'Research & Innovation Hub',
         subtitle: 'Quality Education | Central Europe',
         description: 'Access world-renowned Austrian universities with cutting-edge research',
-        image: '/flags/austria.png',
+        image: '/austria-des.jpg',
         color: '#ED2939',
     },
 ];
@@ -152,10 +153,10 @@ export function HighlightsSection() {
                                     viewport={{ once: true }}
                                     transition={{ duration: 0.5, delay: index * 0.1 + 0.6 }}
                                 >
-                                    <button className="bg-white text-black font-semibold px-8 py-3 rounded-xl hover:bg-white/90 transition-all duration-300 group-hover:shadow-2xl group-hover:shadow-white/20 flex items-center gap-2 group/btn">
+                                    <Link href="/contact" className="inline-flex bg-white text-black font-semibold px-8 py-3 rounded-xl hover:bg-white/90 transition-all duration-300 group-hover:shadow-2xl group-hover:shadow-white/20 items-center gap-2 group/btn">
                                         APPLY NOW
                                         <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover/btn:translate-x-1" />
-                                    </button>
+                                    </Link>
                                 </motion.div>
                             </div>
 
@@ -173,10 +174,10 @@ export function HighlightsSection() {
                     transition={{ duration: 0.6, delay: 0.4 }}
                     className="text-center mt-12"
                 >
-                    <button className="text-primary hover:text-primary/80 font-semibold text-lg flex items-center gap-2 mx-auto group">
+                    <Link href="/courses" className="text-primary hover:text-primary/80 font-semibold text-lg inline-flex items-center gap-2 mx-auto group">
                         View All Destinations
                         <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-2" />
-                    </button>
+                    </Link>
                 </motion.div>
             </div>
         </section>

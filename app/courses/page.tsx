@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { Suspense, useState, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -8,18 +8,22 @@ import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/componen
 import { Badge } from '@/components/ui/badge';
 import { Search, MapPin, Calendar, Globe, Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import NextImage from 'next/image';
 import { fetchPublicUniversities } from '@/action/university/server-action';
 import type { ApiUniversity } from '@/action/university/types';
 
 const UNIVERSITIES_PER_PAGE = 12;
+const normalizeCountry = (value: string) => value.trim().toLowerCase().replace(/[-_\s]+/g, ' ');
 
-export default function UniversitiesPage() {
+function UniversitiesPageContent() {
     const [allUniversities, setAllUniversities] = useState<ApiUniversity[]>([]);
     const [selectedCountry, setSelectedCountry] = useState('All');
     const [searchQuery, setSearchQuery] = useState('');
     const [visibleCount, setVisibleCount] = useState(UNIVERSITIES_PER_PAGE);
     const [loading, setLoading] = useState(true);
+    const searchParams = useSearchParams();
+    const countryParam = searchParams.get('country') || '';
 
     // Fetch API universities on mount
     useEffect(() => {
@@ -35,6 +39,30 @@ export default function UniversitiesPage() {
         const ordered = Array.from(countrySet).sort();
         return ['All', ...ordered];
     }, [allUniversities]);
+
+    useEffect(() => {
+        if (!countryParam) return;
+
+        const normalizedParam = normalizeCountry(countryParam);
+        const matchedCountry = countries.find((country) => {
+            if (country === 'All') return false;
+            const normalizedCountry = normalizeCountry(country);
+            if (normalizedCountry === normalizedParam) return true;
+
+            // Allow slug/alias style matches (e.g. south-korea -> korea / south korea)
+            if (normalizedParam.includes(normalizedCountry) || normalizedCountry.includes(normalizedParam)) {
+                return true;
+            }
+            if (normalizedParam === 'south korea' && normalizedCountry === 'korea') return true;
+            if (normalizedParam === 'korea' && normalizedCountry === 'south korea') return true;
+
+            return false;
+        });
+        if (!matchedCountry) return;
+
+        setSelectedCountry(matchedCountry);
+        setVisibleCount(UNIVERSITIES_PER_PAGE);
+    }, [countryParam, countries]);
 
     const filteredUniversities = useMemo(() => {
         return allUniversities.filter(uni => {
@@ -192,5 +220,22 @@ export default function UniversitiesPage() {
                 )}
             </div>
         </div>
+    );
+}
+
+export default function UniversitiesPage() {
+    return (
+        <Suspense
+            fallback={
+                <div className="flex items-center justify-center py-24">
+                    <div className="flex flex-col items-center gap-3">
+                        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                        <p className="text-muted-foreground">Loading universities...</p>
+                    </div>
+                </div>
+            }
+        >
+            <UniversitiesPageContent />
+        </Suspense>
     );
 }

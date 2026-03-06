@@ -42,6 +42,15 @@ export function HeroSection() {
             {/* Additional Gradient Overlay */}
             <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-black/70 -z-10" />
 
+            {/* Bottom blend so hero video matches the page background */}
+            <div
+                className="absolute inset-x-0 bottom-0 h-36 -z-10"
+                style={{
+                    background:
+                        'linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.42) 55%, var(--background) 100%)',
+                }}
+            />
+
             <div className="container px-4 text-center z-10">
                 <motion.div
                     initial="hidden"

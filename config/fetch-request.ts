@@ -38,13 +38,43 @@ async function request<T = any>(
   if (token) headers["Authorization"] = `Bearer ${token}`;
 
   try {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      method,
-      headers,
-      body: body !== undefined ? JSON.stringify(body) : undefined,
-      // Ensure no caching on mutating requests
-      cache: method === "GET" ? "default" : "no-store",
-    });
+    const primaryBaseUrl = API_BASE_URL.trim() || "http://localhost:3002";
+    const urlCandidates = [primaryBaseUrl];
+    if (primaryBaseUrl.includes("localhost:3002")) {
+      urlCandidates.push(primaryBaseUrl.replace("localhost:3002", "localhost:8000"));
+    } else if (primaryBaseUrl.includes("localhost:8000")) {
+      urlCandidates.push(primaryBaseUrl.replace("localhost:8000", "localhost:3002"));
+    }
+
+    let response: Response | null = null;
+    let lastError: unknown = null;
+    for (const baseUrl of urlCandidates) {
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 15000);
+        const candidateResponse = await fetch(`${baseUrl}${endpoint}`, {
+          method,
+          headers,
+          body: body !== undefined ? JSON.stringify(body) : undefined,
+          // Ensure no caching on mutating requests
+          cache: method === "GET" ? "default" : "no-store",
+          signal: controller.signal,
+        });
+        clearTimeout(timeout);
+        // If this candidate looks like a wrong backend target, try next base URL.
+        if (!candidateResponse.ok && urlCandidates.length > 1 && (candidateResponse.status === 404 || candidateResponse.status === 502)) {
+          response = candidateResponse;
+          continue;
+        }
+        response = candidateResponse;
+        break;
+      } catch (err) {
+        lastError = err;
+      }
+    }
+    if (!response) {
+      throw lastError instanceof Error ? lastError : new Error("Network error");
+    }
 
     const data = await parseResponse(response);
 

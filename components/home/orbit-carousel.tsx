@@ -2,13 +2,15 @@
 
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Mail, Briefcase, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 // --- Data: countries ---
 const countries = [
   {
     id: 1,
     name: "South Korea",
+    slug: "south-korea",
     universities: "45+ Universities",
     image: "/flags/south-korea.png",
     description: "Premier education with work opportunities"
@@ -16,6 +18,7 @@ const countries = [
   {
     id: 2,
     name: "Italy",
+    slug: "italy",
     universities: "25+ Universities",
     image: "/flags/italy.png",
     description: "Arts, culture & world-class education"
@@ -23,6 +26,7 @@ const countries = [
   {
     id: 3,
     name: "Malta",
+    slug: "malta",
     universities: "20+ Universities",
     image: "/flags/malta.png",
     description: "English-speaking EU destination"
@@ -30,15 +34,17 @@ const countries = [
   {
     id: 4,
     name: "Austria",
+    slug: "austria",
     universities: "20+ Universities",
-    image: "/flags/austria.png",
+    image: "/flags/austria.webp",
     description: "Research & innovation excellence"
   },
   {
     id: 5,
     name: "Hungary",
+    slug: "hungary",
     universities: "10+ Universities",
-    image: "/flags/hungary.png",
+    image: "/flags/hungary.jpg",
     description: "Affordable quality education"
   },
 ];
@@ -71,11 +77,13 @@ const useIsMobile = (breakpoint: number = 768): boolean => {
 export default function OrbitCarousel() {
   const [activeIndex, setActiveIndex] = React.useState(0);
   const isMobile = useIsMobile();
-  const autoRotateTimer = React.useRef<NodeJS.Timeout | null>(null);
+  const router = useRouter();
+  const lastManualInteractionRef = React.useRef(0);
 
   const containerRadius = isMobile ? 130 : 200;
   const profileSize = isMobile ? 60 : 80;
   const containerSize = containerRadius * 2 + 100;
+  const AUTO_ROTATE_MS = 4500;
 
   // Calculate rotation for each profile
   const getRotation = React.useCallback(
@@ -83,52 +91,60 @@ export default function OrbitCarousel() {
     [activeIndex]
   );
 
-  // Navigation
-  const next = () => {
-    setActiveIndex((i) => (i + 1) % countries.length);
-    resetAutoRotate();
-  };
-  const prev = () => {
-    setActiveIndex((i) => (i - 1 + countries.length) % countries.length);
-    resetAutoRotate();
-  };
-
-  // Auto-rotate after 800ms
-  const resetAutoRotate = () => {
-    if (autoRotateTimer.current) {
-      clearTimeout(autoRotateTimer.current);
-    }
-    autoRotateTimer.current = setTimeout(() => {
-      setActiveIndex((i) => (i + 1) % countries.length);
-    }, 800);
-  };
-
-  // Start auto-rotate on mount
-  React.useEffect(() => {
-    resetAutoRotate();
-    return () => {
-      if (autoRotateTimer.current) {
-        clearTimeout(autoRotateTimer.current);
-      }
-    };
+  const markManualInteraction = React.useCallback(() => {
+    lastManualInteractionRef.current = Date.now();
   }, []);
+
+  const next = React.useCallback(() => {
+    setActiveIndex((prev) => (prev + 1) % countries.length);
+  }, []);
+
+  const prev = React.useCallback(() => {
+    setActiveIndex((prev) => (prev - 1 + countries.length) % countries.length);
+  }, []);
+
+  const handleNext = React.useCallback(() => {
+    markManualInteraction();
+    next();
+  }, [markManualInteraction, next]);
+
+  const handlePrev = React.useCallback(() => {
+    markManualInteraction();
+    prev();
+  }, [markManualInteraction, prev]);
+
+  const handleExplore = React.useCallback(() => {
+    const slug = countries[activeIndex].slug;
+    router.push(`/courses?country=${encodeURIComponent(slug)}`);
+  }, [activeIndex, router]);
+
+  // Auto-rotate in a stable interval. Skip immediate tick after manual interaction.
+  React.useEffect(() => {
+    const intervalId = setInterval(() => {
+      const elapsed = Date.now() - lastManualInteractionRef.current;
+      if (elapsed < AUTO_ROTATE_MS) return;
+      next();
+    }, AUTO_ROTATE_MS);
+
+    return () => clearInterval(intervalId);
+  }, [next]);
 
   const handleProfileClick = React.useCallback((index: number) => {
     if (index === activeIndex) return;
+    markManualInteraction();
     setActiveIndex(index);
-    resetAutoRotate();
-  }, [activeIndex]);
+  }, [activeIndex, markManualInteraction]);
 
   // Keyboard navigation
   React.useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent): void => {
-      if (event.key === 'ArrowLeft') prev();
-      else if (event.key === 'ArrowRight') next();
+      if (event.key === 'ArrowLeft') handlePrev();
+      else if (event.key === 'ArrowRight') handleNext();
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [handleNext, handlePrev]);
 
   return (
     <div className="flex flex-col items-center p-4 relative min-h-[400px] bg-white dark:bg-black transition-colors duration-300">
@@ -193,16 +209,19 @@ export default function OrbitCarousel() {
               className="flex justify-center items-center mt-4 space-x-2"
             >
               <button
-                onClick={prev}
+                onClick={handlePrev}
                 className="p-2 rounded-full bg-gray-100 dark:bg-gray-900 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
               >
                 <ChevronLeft size={18} className="text-gray-700 dark:text-gray-300" />
               </button>
-              <button className="px-6 py-2 text-sm font-semibold rounded-full bg-primary text-primary-foreground hover:opacity-90 dark:bg-primary dark:hover:bg-primary/90 transition-all">
+              <button
+                onClick={handleExplore}
+                className="px-6 py-2 text-sm font-semibold rounded-full bg-primary text-primary-foreground hover:opacity-90 dark:bg-primary dark:hover:bg-primary/90 transition-all"
+              >
                 Explore
               </button>
               <button
-                onClick={next}
+                onClick={handleNext}
                 className="p-2 rounded-full bg-gray-100 dark:bg-gray-900 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
               >
                 <ChevronRight size={18} className="text-gray-700 dark:text-gray-300" />

@@ -1,6 +1,7 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { UserCheck, Globe2 } from 'lucide-react';
+import { UserCheck } from 'lucide-react';
 
 export function FeaturesSection() {
     return (
@@ -34,8 +35,14 @@ export function FeaturesSection() {
                         </Button>
                     </div>
                     <div className="relative">
-                        <div className="aspect-square rounded-2xl bg-white/10 backdrop-blur-md border border-white/25 p-8 flex items-center justify-center shadow-[0_30px_80px_-40px_rgba(0,0,0,0.4)]">
-                            <Globe2 className="h-32 w-32 text-white/80" />
+                        <div className="relative aspect-square rounded-2xl bg-white/10 border border-white/25 overflow-hidden shadow-[0_30px_80px_-40px_rgba(0,0,0,0.4)]">
+                            <Image
+                                src="/korea.jpg"
+                                alt="Students in South Korea"
+                                fill
+                                className="object-cover"
+                                priority
+                            />
                         </div>
                         <div className="absolute -left-6 -bottom-6 w-24 h-24 rounded-full bg-white/10 blur-2xl" aria-hidden />
                         <div className="absolute -right-10 top-6 w-32 h-32 rounded-full bg-white/10 blur-3xl" aria-hidden />

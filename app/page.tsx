@@ -16,7 +16,7 @@ export default async function Home() {
   const universities = await fetchPublicUniversities();
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <>
       <HeroSection />
       <ConsultationForm />
       {/* <LogoMarquee /> */}
@@ -28,7 +28,7 @@ export default async function Home() {
       <TestimonialsSection />
       <SuccessStoriesSection />
       <CTASection />
-    </div>
+    </>
   );
 }
 

@@ -27,7 +27,7 @@ export async function fetchPublicUniversities(): Promise<ApiUniversity[]> {
 }
 
 /**
- * Fetch a single university by its MongoDB _id.
+ * Fetch a single university by its ID.
  * Returns null if not found.
  */
 export async function fetchUniversityById(

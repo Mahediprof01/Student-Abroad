@@ -55,7 +55,7 @@ export default function SuccessGallery({ images, videos }: SuccessGalleryProps) 
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {images.map((story, index) => (
                             <motion.div
-                                key={story._id ?? index}
+                                key={story.id ?? index}
                                 initial={{ opacity: 0, y: 20 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
@@ -104,7 +104,7 @@ export default function SuccessGallery({ images, videos }: SuccessGalleryProps) 
                             const embedUrl = story.videoUrl ? getYouTubeEmbedUrl(story.videoUrl) : null;
                             return (
                                 <motion.div
-                                    key={story._id ?? index}
+                                    key={story.id ?? index}
                                     initial={{ opacity: 0, scale: 0.9 }}
                                     whileInView={{ opacity: 1, scale: 1 }}
                                     viewport={{ once: true }}

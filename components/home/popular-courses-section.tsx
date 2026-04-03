@@ -123,7 +123,7 @@ export function PopularCoursesSection({ universities }: Props) {
                         {displayed.length > 0 ? (
                             displayed.map((uni, index) => (
                                 <motion.div
-                                    key={`${uni._id}-${activeTab}`}
+                                    key={`${uni.id}-${activeTab}`}
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, scale: 0.95 }}
@@ -166,7 +166,7 @@ export function PopularCoursesSection({ universities }: Props) {
                                         </CardContent>
                                         <CardFooter className="pt-0">
                                             <Button variant="outline" className="w-full border-primary/20 hover:bg-primary hover:text-primary-foreground group-hover:border-primary transition-all duration-500 font-bold h-11 rounded-lg" asChild>
-                                                <Link href={`/courses/${uni._id}`}>
+                                                <Link href={`/courses/${uni.id}`}>
                                                     View Details
                                                     <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
                                                 </Link>

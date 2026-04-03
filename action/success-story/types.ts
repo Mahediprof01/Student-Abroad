@@ -1,6 +1,5 @@
 export interface ApiSuccessStory {
-  _id: string;
-  id?: string;
+  id: number;
   type: "image" | "video";
   title?: string;
   description?: string;

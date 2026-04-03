@@ -1,6 +1,6 @@
 /** University type matching what the backend returns */
 export interface ApiUniversity {
-  _id: string;
+  id: number;
   name: string;
   description: string;
   location: string;

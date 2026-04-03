@@ -55,7 +55,7 @@ export function SuccessStoriesSection() {
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
                         {images.map((story, index) => (
                             <motion.div
-                                key={story._id}
+                                key={story.id}
                                 initial={{ opacity: 0, y: 30 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true, margin: "-100px" }}

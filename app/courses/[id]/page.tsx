@@ -39,11 +39,11 @@ export default function UniversityPage({ params }: { params: Promise<{ id: strin
                 }
             }
 
-            // Otherwise try API (MongoDB _id string)
+            // Otherwise try API
             const apiUni = await fetchUniversityById(id);
             if (apiUni) {
                 setUniversity({
-                    id: apiUni._id as any,
+                    id: apiUni.id as any,
                     name: apiUni.name,
                     country: apiUni.country,
                     city: apiUni.location,

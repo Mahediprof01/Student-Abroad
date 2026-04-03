@@ -42,7 +42,7 @@ export function TestimonialsSection() {
                         }}
                     >
                         {testimonials.map((item) => (
-                            <div key={item._id} className="w-[350px] md:w-[450px] flex-shrink-0">
+                            <div key={item.id} className="w-[350px] md:w-[450px] flex-shrink-0">
                                 <Card className="h-full bg-muted/30 border-none relative overflow-hidden group hover:bg-muted/50 transition-colors">
                                     <Quote className="absolute top-4 right-4 h-24 w-24 text-primary/5 -rotate-12" />
                                     <CardContent className="p-8 flex flex-col h-full justify-between relative z-10">

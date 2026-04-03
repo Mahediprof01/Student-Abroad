@@ -141,7 +141,7 @@ function UniversitiesPageContent() {
             <div className="container px-4 mx-auto">
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {displayedUniversities.map((uni) => (
-                        <Card key={uni._id} className="h-full flex flex-col hover:shadow-xl transition-shadow duration-300 overflow-hidden group border-none shadow-sm bg-card/50 backdrop-blur-sm">
+                        <Card key={uni.id} className="h-full flex flex-col hover:shadow-xl transition-shadow duration-300 overflow-hidden group border-none shadow-sm bg-card/50 backdrop-blur-sm">
                             <div className="h-48 overflow-hidden relative">
                                 <NextImage
                                     src={uni.image || 'https://images.unsplash.com/photo-1541339907198-e08756ebafe3?auto=format&fit=crop&q=80'}
@@ -173,7 +173,7 @@ function UniversitiesPageContent() {
                             </CardContent>
                             <CardFooter className="pt-0">
                                 <Button className="w-full rounded-lg font-bold h-11 transition-all duration-300" variant="outline" asChild>
-                                    <Link href={`/courses/${uni._id}`}>Learn More</Link>
+                                    <Link href={`/courses/${uni.id}`}>Learn More</Link>
                                 </Button>
                             </CardFooter>
                         </Card>

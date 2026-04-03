@@ -1,6 +1,6 @@
 /** Review type matching what the backend returns */
 export interface ApiReview {
-  _id: string;
+  id: number;
   name: string;
   university: string;
   quote: string;

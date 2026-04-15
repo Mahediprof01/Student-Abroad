@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { Card } from '@/components/ui/card';
 import { Mail, MapPin, Phone } from 'lucide-react';
 
@@ -56,9 +57,18 @@ const employees: Employee[] = [
     },
 ];
 
-export const metadata = {
-    title: 'Our Team | Study Abroad Consultancy',
-    description: 'Meet our expert team of education consultants and visa specialists.',
+export const metadata: Metadata = {
+    title: 'Our Team - Expert Education Consultants',
+    description: 'Meet our expert team of education consultants and visa specialists dedicated to helping students study abroad in South Korea, Italy, Malta, Austria, and Hungary.',
+    alternates: {
+        canonical: '/employees',
+    },
+    openGraph: {
+        title: 'Our Team | Study Abroad Consultancy',
+        description: 'Meet our expert team of education consultants and visa specialists.',
+        url: '/employees',
+        type: 'website',
+    },
 };
 
 export default function EmployeesPage() {

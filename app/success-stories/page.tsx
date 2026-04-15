@@ -1,5 +1,22 @@
+import type { Metadata } from 'next';
 import { fetchPublicSuccessStories } from '@/action/success-story/server-action';
 import SuccessGallery from '@/components/success-story/SuccessGallery';
+
+export const metadata: Metadata = {
+    title: 'Success Stories - Student Achievements',
+    description:
+        'See the success stories of students who achieved their dream of studying abroad with Study Abroad Consultancy. Real results from real students in South Korea, Italy, Malta, Austria, and Hungary.',
+    alternates: {
+        canonical: '/success-stories',
+    },
+    openGraph: {
+        title: 'Success Stories | Study Abroad Consultancy',
+        description:
+            'Celebrating the achievements of our students who successfully started their journey abroad.',
+        url: '/success-stories',
+        type: 'website',
+    },
+};
 
 export default async function SuccessStoriesPage() {
     const allStories = await fetchPublicSuccessStories();

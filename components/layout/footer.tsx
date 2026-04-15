@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Facebook, Instagram, Linkedin, Twitter, MapPin, Phone, Mail, Youtube } from 'lucide-react';
 
 export default function Footer() {
@@ -7,17 +8,17 @@ export default function Footer() {
             <div className="container mx-auto px-4 py-12 md:py-16">
                 <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
                     <div className="space-y-4">
-                        <Link href="/" className="inline-block">
-                            <img src="/logo.png" alt="Study Abroad Consultancy" className="h-20 w-auto object-contain" />
+                        <Link href="/" className="inline-block" aria-label="Study Abroad Consultancy Home">
+                            <Image src="/logo.png" alt="Study Abroad Consultancy" width={160} height={80} className="h-20 w-auto object-contain" />
                         </Link>
                         <p className="text-white/80 text-sm">
                             Empowering students to achieve their dreams of studying abroad with expert guidance and support.
                         </p>
                         <div className="flex space-x-4">
-                            <Link href="https://www.facebook.com/studyabroadconsultantc/" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-white transition-colors">
+                            <Link href="https://www.facebook.com/studyabroadconsultantc/" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-white transition-colors" aria-label="Follow us on Facebook">
                                 <Facebook className="h-5 w-5" />
                             </Link>
-                            <Link href="https://www.youtube.com/@studycbroadconsultancy" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-white transition-colors">
+                            <Link href="https://www.youtube.com/@studycbroadconsultancy" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-white transition-colors" aria-label="Subscribe on YouTube">
                                 <Youtube className="h-5 w-5" />
                             </Link>
                         </div>
@@ -91,7 +92,7 @@ export default function Footer() {
                     </div>
                 </div>
                 <div className="mt-12 pt-8 border-t border-white/20 text-center text-sm text-white/70">
-                    <p>&copy; {new Date().getFullYear()} Study Abroad Consultancy</p>
+                    <p>&copy; {new Date().getFullYear()} Study Abroad Consultancy. All rights reserved.</p>
                 </div>
             </div>
         </footer>

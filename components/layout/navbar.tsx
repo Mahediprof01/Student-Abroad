@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { GraduationCap } from 'lucide-react';
 import {
@@ -19,7 +20,6 @@ const navItems = [
     { name: 'Home', link: '/' },
     { name: 'Universities', link: '/courses' },
     { name: 'Success Stories', link: '/success-stories' },
-    { name: 'Employees', link: '/employees' },
     { name: 'About Us', link: '/about' },
     { name: 'Contact Us', link: '/contact' },
 ];
@@ -33,8 +33,8 @@ export default function Navbar() {
         <ResizableNavbar className="fixed top-4 inset-x-0" isHomePage={isHomePage}>
             {/* Desktop Navigation */}
             <NavBody className="justify-between gap-8">
-                <Link href="/" className="relative z-50 flex items-center px-2 flex-shrink-0 hover:opacity-80 transition-opacity cursor-pointer">
-                    <img src="/logo.png" alt="Study Abroad Consultancy" className="h-16 w-auto object-contain" />
+                <Link href="/" className="relative z-50 flex items-center px-2 flex-shrink-0 hover:opacity-80 transition-opacity cursor-pointer" aria-label="Study Abroad Consultancy Home">
+                    <Image src="/logo.png" alt="Study Abroad Consultancy" width={128} height={64} className="h-16 w-auto object-contain" priority />
                 </Link>
 
                 <NavItems items={navItems} />
@@ -49,8 +49,8 @@ export default function Navbar() {
             {/* Mobile Navigation */}
             <MobileNav visible={true} className="mt-2">
                 <MobileNavHeader>
-                    <Link href="/" className="relative z-50 flex items-center px-2 hover:opacity-80 transition-opacity cursor-pointer">
-                        <img src="/logo.png" alt="Study Abroad Consultancy" className="h-12 w-auto object-contain" />
+                    <Link href="/" className="relative z-50 flex items-center px-2 hover:opacity-80 transition-opacity cursor-pointer" aria-label="Study Abroad Consultancy Home">
+                        <Image src="/logo.png" alt="Study Abroad Consultancy" width={96} height={48} className="h-12 w-auto object-contain" priority />
                     </Link>
                     <MobileNavToggle
                         isOpen={mobileMenuOpen}
